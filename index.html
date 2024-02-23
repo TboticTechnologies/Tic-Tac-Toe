@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<link rel="stylesheet" href="tic tac style.css">
+</head>
+<body>
+<!-- Set up -->
+<div class="game-container">
+<h1 class="title">Tic Tac Toe</h1>
+<div class="win-count" id="winCounts">Wins: X - <span id="XWins">0</span>, O - <span id="OWins">0</span></div>
+<div class="container" id="board">
+<div class="cell" onclick="handleClick(0)"></div>
+<div class="cell" onclick="handleClick(1)"></div>
+<div class="cell" onclick="handleClick(2)"></div>
+<div class="cell" onclick="handleClick(3)"></div>
+<div class="cell" onclick="handleClick(4)"></div>
+<div class="cell" onclick="handleClick(5)"></div>
+<div class="cell" onclick="handleClick(6)"></div>
+<div class="cell" onclick="handleClick(7)"></div>
+<div class="cell" onclick="handleClick(8)"></div>
+</div>
+</div>
+
+<script>
+const board = document.getElementById('board');
+const cells = document.querySelectorAll('.cell');
+let currentPlayer = 'X';
+let gameActive = true;
+let XWins = 0;
+let OWins = 0;
+const winningCombos = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+
+function updateWinCounts() {
+    document.getElementById('XWins').textContent = XWins;
+    document.getElementById('OWins').textContent = OWins;
+}
+// This runs most of the game and is triggered on click.
+function handleClick(index) {
+    if (!gameActive || cells[index].textContent !== '') return;
+    
+    cells[index].textContent = currentPlayer;
+    
+    if (checkWin()) {
+        highlightWinningCells();
+        if (currentPlayer === 'X') {
+            XWins++;
+        } else {
+            OWins++;
+        }
+        updateWinCounts();
+        setTimeout(() => {
+            alert(`Player ${currentPlayer} wins!`);
+            resetGame();
+        }, 1000);
+        return;
+    }
+    
+    if (checkDraw()) {
+        setTimeout(() => {
+            alert("It's a draw!");
+            resetGame();
+        }, 1000);
+        return;
+    }
+    
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+}
+// Compares the current cells to the list of winning conditions.
+function checkWin() {
+    return winningCombos.some(combo => {
+        return combo.every(index => {
+            return cells[index].textContent === currentPlayer;
+        });
+    });
+}
+// This function changes the color of the cells in a row.
+function highlightWinningCells() {
+    winningCombos.forEach(combo => {
+        if (combo.every(index => cells[index].textContent === currentPlayer)) {
+            combo.forEach(index => {
+                cells[index].style.backgroundColor = 'blue';
+                cells[index].style.color = 'white';
+            });
+        }
+    });
+}
+
+function checkDraw() {
+    return [...cells].every(cell => cell.textContent !== '');
+}
+// This function resets all the values.
+function resetGame() {
+    cells.forEach(cell => {
+        cell.textContent = '';
+        cell.style.backgroundColor = '';
+        cell.style.color = '';
+    });
+    currentPlayer = 'X';
+    gameActive = true;
+}
+
+updateWinCounts(); // Initial update of win counts
+</script>
+
+</body>
+</html>
